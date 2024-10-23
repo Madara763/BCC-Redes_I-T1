@@ -17,10 +17,10 @@ Esse programa é executado quando o usuário chama a execução, lê e escreve a
 As mensagens trocadas entre as aplicações cliente e servidora são definidas por um protocolo próprio o Tartaruga.
 
 #### Formato da Mensagem:
+
+   Marcador de início   | Tamanho      | Sequência    | Tipo    | Dados        | CRC  |
 |-----------------------|--------------|--------------|---------|--------------|------|
-   Marcador de início   | tamanho      | sequência    | tipo    | Dados        | crc  |
-|-----------------------|--------------|--------------|---------|--------------|------|
-  8 bits                   6 bits         5 bits         5 bits    63 bytes     8bits
+  8 bits                |   6 bits     |    5 bits    |  5 bits |  63 bytes    | 8bits
 
 #### Marcador de inicio:
   - Marcador de início: 0111 1110 
