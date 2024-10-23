@@ -3,13 +3,13 @@
 Esse trabalho consiste na criação de um sistema de backup com aplicações do lado do cliente e do servidor, além de um protocolo de comunicação novo.
 ### Aplicação servidora:
 Esse programa, instalado e sempre em execução no servidor recebe, trata e retorna a solicitações do cliente, sendo essas:
-  - Backup: Cliente envia um arquivo ao servidor, o servidor armazena o arquivo e registra que ele está salvo, e retorna uma mensagem se deu certo.
+  - Backup: Servidor recebe um arquivo do cliente, o servidor armazena o arquivo e registra que ele está salvo, e retorna uma mensagem se deu certo.
   - Restaura: Cliente solitita um arquivo ao servidor, servidor consulta a existencia do arquivo, se existir retorna o arquivo e o cliente retorna que deu certo, caso contrário retorna uma mensagem de erro.
   - Consulta: Cliente envia pergunta se um arquivo com nome 'x' existe no servidor de backup, servidor retorna se existe ou não.
 
 ### Aplicação Cliente
 Esse programa é executado quando o usuário chama a execução, lê e escreve arquivos na máquina do cliente e faz requisicões a aplicação no servidor:
-  - Backup: Cliente envia um arquivo ao servidor, o servidor armazena o arquivo e registra que ele está salvo, e retorna uma mensagem se deu certo.
+  - Backup: Cliente recebe um arquivo do usuário envia um arquivo ao servidor, o servidor armazena o arquivo e registra que ele está salvo, e retorna uma mensagem se deu certo.
   - Restaura: Cliente solitita um arquivo ao servidor, servidor consulta a existencia do arquivo, se existir retorna o arquivo e o cliente retorna que deu certo, caso contrário retorna uma mensagem de erro, Cliente rebebe o arquivo e salva no diretório indicado.
   - Consulta: Cliente envia pergunta se um arquivo com nome 'x' existe no servidor de backup, servidor retorna se existe ou não, clinete exibe ao usuário.
 
