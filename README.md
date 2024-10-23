@@ -36,19 +36,19 @@ As mensagens trocadas entre as aplicações cliente e servidora são definidas p
   - Controle de fluxo: para-e-espera
 
 #### Tipos:
-Alguns tipos das mensagens trocadas entre cliente e servidora.
-00000 ACK – tudo ok, manda o próximo pedaço/arquivo
-00001 NACK – problema de crc, não entendi e mando dnv, se ocorrer
-manda dnv
-00010 OK – Tudo certo.
-00100 backup – inidica realização de backup
-00101 restaura – indica realização de restaura
-00110 verefica – indica realização de vereficação
-11111 Erro – um código de erro
-10000 Dados – enviando dados
-01111 Tamanho
-10001 Fim da transmissão
-01110 ok + tamanho
-01101 ok+checksum – cksum() função de verificação de crc
-
+Alguns tipos das mensagens trocadas entre cliente e servidora:
+```
+  00000 ACK – tudo ok, manda o próximo pedaço/arquivo
+  00001 NACK – problema de crc, não entendi e mando dnv, se ocorrer manda dnv
+  00010 OK – Tudo certo.
+  00100 backup – inidica realização de backup
+  00101 restaura – indica realização de restaura
+  00110 verefica – indica realização de vereficação
+  11111 Erro – um código de erro
+  10000 Dados – enviando dados
+  01111 Tamanho
+  10001 Fim da transmissão
+  01110 ok + tamanho
+  01101 ok+checksum – cksum() função de verificação de crc
+```
 
