@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+# include <unistd.h>
+
+int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq );
+
+int main(int argc, char **argv, char **envp){
+  int opt;
+  char* nome_arq;
+
+  if(trata_entrada(argc, argv, envp, &opt, &nome_arq)){
+    printf("opcao: %c \nnome: %s", opt, nome_arq);
+  }
+  
+  return 0;
+}
+
+//retorna 1 se a entrada e valida, e 0 cc
+//o identificador da opc e retornado em opt, e o nome do arquivo em nome_arq
+//Imprime o help e avisa em caso de arguemntos invalidos
+int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq ){
+  /*
+    -h ou --help exibe ajuda
+    -b -> backup
+    -c -> consulta arquivo
+    -r -> restaura arquivo
+  */
+  char options[]="hb:r:c:";
+  char msg_erro[]="Opção inválida, consulte as opções -h ou --help.\n";
+  char msg_ajuda[]=" ./prog -opt nome_arquivo \n\
+  opções: \n\
+    -b: Envia o arquivo ao servidor.\n\
+    -c: Consulta se o arquivo existe no servidor.\n\
+    -r: Restaura o arquivo do servidor no diretório corrente.\n\
+    -h ou --help: Exibe essa mensagem de ajuda.\n ";
+
+  *opt = getopt (argc, argv, options);
+  
+  if((*opt == 'b' || *opt == 'c' || *opt == 'r' ) && argc == 3 ){
+    *nome_arq = argv[2];
+  }
+  else
+    if( (argc == 2 && argv[1] == "--help") || *opt == 'h' ) 
+      printf("%s", msg_ajuda); 
+    else{
+      printf("%s", msg_erro); 
+      return 0;
+    }
+  return 1;
+}
