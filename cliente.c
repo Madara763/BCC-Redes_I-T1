@@ -1,16 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
-# include <unistd.h>
+#include <unistd.h>
+
+#include "libbckapp.h"
 
 int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq );
 
 int main(int argc, char **argv, char **envp){
   int opt;
   char* nome_arq;
+  char nome[NAME_SIZE];
+  char caminho[PATH_SIZE];
 
-  if(trata_entrada(argc, argv, envp, &opt, &nome_arq)){
-    printf("opcao: %c \nnome: %s", opt, nome_arq);
+  if(!trata_entrada(argc, argv, envp, &opt, &nome_arq))
+    return 0;
+  
+  switch (opt)
+  {
+    case 'b':
+      trata_nome_dir(nome_arq, nome, caminho);
+      printf("Fazendo Backup: %s/%s ...\n", caminho, nome);
+      
+      break;
+    case 'c':
+      trata_nome_dir(nome_arq, nome, caminho);
+      printf("Checando se há backup de: %s/%s ...\n", caminho, nome);
+      break;
+    case 'r':
+      trata_nome_dir(nome_arq, nome, caminho);
+      printf("Restaurando: %s/%s ...\n", caminho, nome);
+      break;
+
+    default:
+      printf("Opção inválida, consulte as opções -h ou --help.\n");
+      break;
   }
+
   
   return 0;
 }
@@ -29,22 +54,25 @@ int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nom
   char msg_erro[]="Opção inválida, consulte as opções -h ou --help.\n";
   char msg_ajuda[]=" ./prog -opt nome_arquivo \n\
   opções: \n\
-    -b: Envia o arquivo ao servidor.\n\
-    -c: Consulta se o arquivo existe no servidor.\n\
-    -r: Restaura o arquivo do servidor no diretório corrente.\n\
-    -h ou --help: Exibe essa mensagem de ajuda.\n ";
+    -b: BACKUP - Envia o arquivo ao servidor.\n\
+    -c: CONSULTAR - Consulta se o arquivo existe no servidor.\n\
+    -r: RESTAURAR - Restaura o arquivo do servidor no diretório corrente.\n\
+    -h ou --help: AJUDA -  Exibe essa mensagem de ajuda.\n \
+  \nBCKAPP - v1.0 \n";
 
   *opt = getopt (argc, argv, options);
   
-  if((*opt == 'b' || *opt == 'c' || *opt == 'r' ) && argc == 3 ){
+  if((*opt == 'b' || *opt == 'c' || *opt == 'r' ) && argc == 3 )
     *nome_arq = argv[2];
-  }
+
   else
-    if( (argc == 2 && argv[1] == "--help") || *opt == 'h' ) 
+    if( (argc == 2 && !strcmp(argv[1], "--help")) || *opt == 'h' ) 
       printf("%s", msg_ajuda); 
+    
     else{
       printf("%s", msg_erro); 
       return 0;
     }
+
   return 1;
 }
