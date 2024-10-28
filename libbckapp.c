@@ -29,7 +29,7 @@ int trata_nome_dir(char* nome_arq, char* nome, char* caminho){
     else{                   
         //salva o nome e pega o diretório
         strcpy(nome, nome_arq);
-        getcwd(caminho, PATH_SIZE);
+        getcwd(caminho, PATH_SIZE);//Get path name of the working directory
     }
     return 1;
 }

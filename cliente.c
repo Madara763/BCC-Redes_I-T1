@@ -20,7 +20,7 @@ int main(int argc, char **argv, char **envp){
     case 'b':
       trata_nome_dir(nome_arq, nome, caminho);
       printf("Fazendo Backup: %s/%s ...\n", caminho, nome);
-      
+
       break;
     case 'c':
       trata_nome_dir(nome_arq, nome, caminho);
