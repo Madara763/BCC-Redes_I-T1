@@ -7,35 +7,53 @@
 int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq );
 
 int main(int argc, char **argv, char **envp){
+  //alocacao de mem. e definicao de variaveis
   int opt;
   char* nome_arq;
   char nome[NAME_SIZE];
   char caminho[PATH_SIZE];
   char caminho_atual[PATH_SIZE];
   char caminho_completo[NAME_SIZE + PATH_SIZE];
-
-  if(!trata_entrada(argc, argv, envp, &opt, &nome_arq))
-    return 0;
   
+  FILE* arquivo;
+
+  void* buffer=malloc(TAM_BUFFER);
+  if(!buffer)return 0;
+
+  //verifica os parametros da main
+  if(!trata_entrada(argc, argv, envp, &opt, &nome_arq)) return 0;
+  
+  //Menu, executa a funcionalidade chamada pelo usuario
   switch (opt)
   {
-    case 'b':
+    //backup
+    case 'b': 
       trata_nome_dir(nome_arq, nome, caminho);
       printf("Fazendo Backup: %s/%s ...\n", caminho, nome);
-
-      if(abre_arquivo(caminho, nome, caminho_completo, caminho_atual) )
+      
+      arquivo=abre_arquivo(caminho, nome, caminho_completo, caminho_atual);
+      if(arquivo)
         printf("Arquivo existe e pode ser aberto.\n");
       else
         printf("Arquivo nao existe ou nao pode ser aberto.\n");
+      
+      while(le_arquivo(arquivo, buffer, TAM_BUFFER)){
 
+
+
+      }
       printf("Caminho atual do prog: %s\n", caminho_atual);
       printf("Caminho do arquivo: %s\n", caminho_completo);
 
       break;
-    case 'c':
+
+    //consulta
+    case 'c': 
       trata_nome_dir(nome_arq, nome, caminho);
       printf("Checando se há backup de: %s/%s ...\n", caminho, nome);
       break;
+
+    //retaura
     case 'r':
       trata_nome_dir(nome_arq, nome, caminho);
       printf("Restaurando: %s/%s ...\n", caminho, nome);

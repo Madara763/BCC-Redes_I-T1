@@ -48,8 +48,9 @@ int trata_nome_dir(char* nome_arq, char* nome, char* caminho){
 
 //Verifica se o arquivo existe 
 //Retorna um stream para o arquivo se der tudo certo, e NULL cc
-//caminho_completo e caminho_atual devem ter sido alocados
-FILE* abre_arquivo(const char* caminho, const char* nome, char* caminho_completo, char* caminho_atual ){
+//Caminho_completo e caminho_atual devem ter sido alocados
+//Abre no modo de leitura
+FILE* abre_arquivo(const char* caminho, const char* nome, char* caminho_completo, char* caminho_atual){
   
   //Salva completo do arquivo
   geraCaminhoCompleto(caminho, nome, caminho_completo);
@@ -66,9 +67,21 @@ FILE* abre_arquivo(const char* caminho, const char* nome, char* caminho_completo
     return NULL;
   }
   
-
-
   return arq;
 }//Fim abre_arquivo
+
+//Le o arquivo e retorna um buffer do tamanho recebido
+//Recebe um ponteiro para um arquivo aberto no modo leitura
+//Retorna a quantidade de bytes lidos
+int le_arquivo(FILE* arquivo, void* buffer, int tamanho_buffer){
+  
+  if(!arquivo){fprintf(stderr, "Erro ao ler aquivo.\n"); return 0;}
+
+  int b_lidos=0;
+
+  b_lidos=fread(buffer, 1, tamanho_buffer, arquivo);
+
+  return b_lidos;
+}
 
 

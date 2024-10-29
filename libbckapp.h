@@ -28,6 +28,12 @@ int trata_nome_dir(char* nome_arq, char* nome, char* caminho);
 //Verifica se o arquivo existe 
 //Retorna um stream para o arquivo se der tudo certo, e NULL cc
 //caminho_completo e caminho_atual devem ter sido alocados
+//Abre no modo de leitura
 FILE* abre_arquivo(const char* caminho, const char* nome, char* caminho_completo, char* caminho_atual );
+
+//Le o arquivo e retorna um buffer do tamanho recebido
+//Recebe um ponteiro para um arquivo aberto no modo leitura
+//Retorna a quantidade de bytes lidos
+int le_arquivo(FILE* arquivo, void* buffer, int tamanho_buffer);
 
 #endif
