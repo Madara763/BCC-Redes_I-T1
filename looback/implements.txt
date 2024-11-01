@@ -1,0 +1,48 @@
+
+
+IMPLEMENTAR:
+
+
+
+//definir tabela de erros
+
+
+
+//calcula crc - vereficar antes de desmonstar
+calcula_crc()
+
+
+//recebe a msg tamanho tipo e prepara a mensgaem para ser enviada!
+void* prepara_pacote(int tam, unsigned char sequencia, unsigned char tipo, void* dados){
+
+    void* pacote = malloc(tam + 4)
+
+    ((cast*)pacote)[0] = marcado de inicio
+    pacote[1] = tamanho e sequencia
+    pacote[2] = sequencia e tipo
+    pacote[3] + tam_dados = dados
+    pacote[3+tam_dados] = crc
+    calcula_crc();
+
+    return pacote;
+}
+
+
+
+//enviar pacote - pega pacote e manda para o outro lado
+//server enviar msg de erro ou tudo certo!!!
+enviar_pacote()
+
+
+
+//recebe pacote - reber o pacote e guaradr em um buffer
+//vereficar crc aqui dentro!
+recebe_pacote()
+
+
+
+// deosntar pacote - separar as tripa de bit do protocolo
+// dados tem que estar bem bonitinho pro meu mano davi manipular!
+desmontar_pacote()
+
+

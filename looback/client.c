@@ -29,6 +29,8 @@ int cria_raw_socket(char* nome_interface) {
         exit(-1);
     }
 
+
+
     return soquete;
 }
 
