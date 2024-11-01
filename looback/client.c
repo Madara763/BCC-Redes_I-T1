@@ -7,30 +7,23 @@
 #include <string.h>
 #include <unistd.h>
 
-int cria_raw_socket(char* nome_interface_rede) {
+#define MARKER 0xAA      // Marcador de início (1 byte fixo)
+#define DATA_SIZE 63     // Tamanho fixo para o campo Dados (63 bytes)
+#define CRC_SEED 0xFF    // CRC inicial (1 byte fixo)
 
-    // Cria um socket de nível de enlace, do tipo "raw" (SOCK_RAW) e protocolo Ethernet (ETH_P_ALL)
+int cria_raw_socket(char* nome_interface) {
     int soquete = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     if (soquete == -1) {
         fprintf(stderr, "Erro ao criar socket: Verifique se você é root!\n");
         exit(-1);
     }
 
-    // Converte o nome da interface de rede (e.g., "lo") no índice numérico da interface
-    int ifindex = if_nametoindex(nome_interface_rede);
-    
-    // estrutura que define o endereço de um socket de nível de enlace. A estrutura é configurada 
-    // para o protocolo Ethernet (sll_protocol) e associada ao índice da interface (sll_ifindex).
+    int ifindex = if_nametoindex(nome_interface);
     struct sockaddr_ll endereco = {0};
-
-    // Configura a estrutura de endereço de rede para o nível de enlace, 
-    // define o protocolo Ethernet e associa ao índice da interface
     endereco.sll_family = AF_PACKET;
     endereco.sll_protocol = htons(ETH_P_ALL);
     endereco.sll_ifindex = ifindex;
 
-
-    // bind(): vincula o socket à interface de rede especificada. 
     if (bind(soquete, (struct sockaddr*) &endereco, sizeof(endereco)) == -1) {
         fprintf(stderr, "Erro ao fazer bind no socket\n");
         exit(-1);
@@ -39,24 +32,48 @@ int cria_raw_socket(char* nome_interface_rede) {
     return soquete;
 }
 
+// Função para calcular o CRC simples de 8 bits
+unsigned char calcula_crc(const unsigned char *dados, size_t tamanho) {
+    unsigned char crc = CRC_SEED;
+    for (size_t i = 0; i < tamanho; i++) {
+        crc ^= dados[i];
+    }
+    return crc;
+}
+
 int main() {
-    char *interface = "lo"; // substitua pela interface adequada
+    char *interface = "lo";  // Interface de rede
     int soquete = cria_raw_socket(interface);
-    char pacote[ETH_FRAME_LEN]; //define um buffer pacote que armazenará os dados a serem enviados, com tamanho máximo de um quadro Ethernet.
+    unsigned char pacote[ETH_FRAME_LEN];  // Buffer de pacote
 
-    // Preparando dados fictícios para o pacote
-    memset(pacote, 0xFF, sizeof(pacote)); // Conteúdo do pacote (dummy data)
-
+    // Configurando o protocolo
+    unsigned char marcador = MARKER;
+    unsigned char tamanho = DATA_SIZE;
+    unsigned char sequencia = 0x1F;  // Exemplo de valor para o campo Sequência (5 bits)
+    unsigned char tipo = 4;       // Exemplo de valor para o campo Tipo (5 bits)
+    const char *dados = "Este é um exemplo de dados com tamanho fixo de 63 bytes!";
     
-    struct sockaddr_ll destino = {0};   //define a estrutura de endereço do destinatário.
-    destino.sll_ifindex = if_nametoindex(interface);    // associa o índice da interface de rede.
-    destino.sll_halen = ETH_ALEN;   //define o tamanho do endereço de hardware (6 bytes).
-    memset(destino.sll_addr, 0xFF, ETH_ALEN); // Endereço de broadcast
+    // Configurando os primeiros campos do pacote
+    pacote[0] = marcador;
+    pacote[1] = ((tamanho & 0x3F) << 2) | ((sequencia >> 3) & 0x03);  // 6 bits de tamanho, 2 bits de sequência
+    pacote[2] = ((sequencia & 0x07) << 5) | (tipo & 0x1F);             // 3 bits de sequência, 5 bits de tipo
+
+    // Copia os dados de 63 bytes no pacote a partir do byte 3
+    memcpy(&pacote[3], dados, DATA_SIZE);
+
+    // Calcula o CRC para o campo de dados
+    unsigned char crc = calcula_crc((unsigned char *)dados, DATA_SIZE);
+    pacote[3 + DATA_SIZE] = crc;
+
+    struct sockaddr_ll destino = {0};  // Endereço do destinatário
+    destino.sll_ifindex = if_nametoindex(interface);
+    destino.sll_halen = ETH_ALEN;
+    memset(destino.sll_addr, 0xFF, ETH_ALEN);  // Endereço de broadcast
 
     printf("Enviando pacote...\n");
 
-    // sendto() envia o pacote para o destinatário especificado (modo de broadcast). Em caso de erro, imprime a mensagem e encerra o programa.
-    if (sendto(soquete, pacote, sizeof(pacote), 0, (struct sockaddr*)&destino, sizeof(destino)) < 0) {
+    // Envia o pacote
+    if (sendto(soquete, pacote, 4 + DATA_SIZE, 0, (struct sockaddr*)&destino, sizeof(destino)) < 0) {
         perror("Erro ao enviar pacote");
         close(soquete);
         exit(-1);
