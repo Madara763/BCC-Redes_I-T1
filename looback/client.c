@@ -43,6 +43,27 @@ unsigned char calcula_crc(const unsigned char *dados, size_t tamanho) {
     return crc;
 }
 
+
+void envia_pacote(void* pacote, char* interface, int soquete){
+
+    //declarando estrutura para o endereço de destino
+    struct sockaddr_ll destino = {0};  // Endereço do destinatário
+    destino.sll_ifindex = if_nametoindex(interface);
+    destino.sll_halen = ETH_ALEN;
+    memset(destino.sll_addr, 0xFF, ETH_ALEN);  
+
+    //envia o pacote usando sendto()
+    printf("Enviando pacote...\n");
+    // Envia o pacote
+    if (sendto(soquete, pacote, 4 + DATA_SIZE, 0, (struct sockaddr*)&destino, sizeof(destino)) < 0) {
+        perror("Erro ao enviar pacote");
+        close(soquete);
+        exit(-1);
+    }
+
+
+}
+
 int main() {
     char *interface = "lo";  // Interface de rede
     int soquete = cria_raw_socket(interface);
@@ -67,19 +88,11 @@ int main() {
     unsigned char crc = calcula_crc((unsigned char *)dados, DATA_SIZE);
     pacote[3 + DATA_SIZE] = crc;
 
-    struct sockaddr_ll destino = {0};  // Endereço do destinatário
-    destino.sll_ifindex = if_nametoindex(interface);
-    destino.sll_halen = ETH_ALEN;
-    memset(destino.sll_addr, 0xFF, ETH_ALEN);  // Endereço de broadcast
+    
 
-    printf("Enviando pacote...\n");
+    envia_pacote(pacote, interface, soquete);
 
-    // Envia o pacote
-    if (sendto(soquete, pacote, 4 + DATA_SIZE, 0, (struct sockaddr*)&destino, sizeof(destino)) < 0) {
-        perror("Erro ao enviar pacote");
-        close(soquete);
-        exit(-1);
-    }
+    
 
     printf("Pacote enviado com sucesso!\n");
 
