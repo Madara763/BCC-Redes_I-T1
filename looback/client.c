@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MARKER 0xAA      // Marcador de início (1 byte fixo)
+#define MARKER 126      // Marcador de início (1 byte fixo)
 #define DATA_SIZE 63     // Tamanho fixo para o campo Dados (63 bytes)
 #define CRC_SEED 0xFF    // CRC inicial (1 byte fixo)
 

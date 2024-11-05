@@ -13,7 +13,7 @@ calcula_crc()
 
 
 //recebe a msg tamanho tipo e prepara a mensgaem para ser enviada!
-void* prepara_pacote(int tam, unsigned char sequencia, unsigned char tipo, void* dados){
+OK void* prepara_pacote(int tam, unsigned char sequencia, unsigned char tipo, void* dados){
 
     void* pacote = malloc(tam + 4)
 
@@ -31,18 +31,18 @@ void* prepara_pacote(int tam, unsigned char sequencia, unsigned char tipo, void*
 
 //enviar pacote - pega pacote e manda para o outro lado
 //server enviar msg de erro ou tudo certo!!!
-enviar_pacote()
+enviar_pacote() OK
 
 
 
 //recebe pacote - reber o pacote e guaradr em um buffer
 //vereficar crc aqui dentro!
-recebe_pacote()
+recebe_pacote() OK
 
 
 
 // deosntar pacote - separar as tripa de bit do protocolo
 // dados tem que estar bem bonitinho pro meu mano davi manipular!
-desmontar_pacote()
+desmontar_pacote() OK
 
 

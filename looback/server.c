@@ -7,18 +7,18 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MARKER 0xAA       // Valor esperado para o marcador de início
+#define MARKER 126       // Valor esperado para o marcador de início
 #define DATA_SIZE 63      // Tamanho do campo Dados
 #define CRC_SEED 0xFF     // CRC inicial
 
 // Função para calcular o CRC simples de 8 bits
-unsigned char calcula_crc(const unsigned char *dados, size_t tamanho) {
-    unsigned char crc = CRC_SEED;
-    for (size_t i = 0; i < tamanho; i++) {
-        crc ^= dados[i];
-    }
-    return crc;
-}
+// unsigned char calcula_crc(unsigned char* dados, size_t tamanho) {
+//     unsigned char crc = CRC_SEED;
+//     for (size_t i = 0; i < tamanho; i++) {
+//         crc ^= dados[i];
+//     }
+//     return crc;
+// }
 
 int cria_raw_socket(char* nome_interface_rede) {
     int soquete = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
@@ -46,53 +46,65 @@ int cria_raw_socket(char* nome_interface_rede) {
     return soquete;
 }
 
+short int verifica_marcador(unsigned char* buffer) {
+    // Verifica se o marcador de início é válido
+    if (buffer[0] != MARKER) {
+        printf("Marcador de início inválido!\n");
+        return 1;
+    }
+    return 0;
+}
+
+void recebe_pacote(int soquete, unsigned char* buffer) {
+    // Receber pacotes
+    ssize_t tamanho_recebido = recvfrom(soquete, buffer, ETH_FRAME_LEN, 0, NULL, NULL);
+    if (tamanho_recebido < 0) {
+        perror("Erro ao receber pacote");
+        close(soquete);
+        exit(-1);
+    }
+}
+
+void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char* tamanho, unsigned char* sequencia, unsigned char* tipo) {
+    // Extrair tamanho (6 bits) e sequência (5 bits)
+    *tamanho = (buffer[1] >> 2) & 0x3F;
+    *sequencia = ((buffer[1] & 0x03) << 3) | (buffer[2] >> 5);
+
+    // Extrair tipo (5 bits)
+    *tipo = buffer[2] & 0x1F;
+
+    // Extrair dados (63 bytes)
+    memcpy(dados, &buffer[3], DATA_SIZE);
+}
+
 int main() {
     char *interface = "lo";  // Usando loopback
     int soquete = cria_raw_socket(interface);
-    unsigned char buffer[ETH_FRAME_LEN];
+    unsigned char buffer[ETH_FRAME_LEN];  // Receberá toda a mensagem enviada
+    short int flag;  // Flag para identificar se o marcador de início está correto
+    unsigned char dados[DATA_SIZE];  // Parte de dados da mensagem recebida
+    unsigned char tamanho = 0;       // Campo tamanho da mensagem recebida
+    unsigned char sequencia = 0;     // Sequência da mensagem
+    unsigned char tipo = 0;          // Tipo da mensagem (ex: backup, restaura, verifica)
 
     printf("Aguardando pacotes...\n");
 
     while (1) {
-        // Receber pacotes
-        ssize_t tamanho_recebido = recvfrom(soquete, buffer, ETH_FRAME_LEN, 0, NULL, NULL);
-        if (tamanho_recebido < 0) {
-            perror("Erro ao receber pacote");
-            close(soquete);
-            exit(-1);
-        }
+        // Recebe o pacote e guarda em buffer
+        recebe_pacote(soquete, buffer);
 
         // Verifica o marcador de início
-        if (buffer[0] != MARKER) {
-            fprintf(stderr, "Marcador de início inválido!\n");
+        flag = verifica_marcador(buffer);
+        if (flag == 1) {
+            printf("Marcador inválido!\n");
             continue;
         }
 
-        // Extrair tamanho (6 bits) e sequência (5 bits)
-        unsigned char tamanho = (buffer[1] >> 2) & 0x3F;
-        unsigned char sequencia = ((buffer[1] & 0x03) << 3) | (buffer[2] >> 5);
+        // Desmonta o pacote, colocando cada parte da mensagem nas variáveis passadas
+        desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
 
-        // Extrair tipo (5 bits)
-        unsigned char tipo = buffer[2] & 0x1F;
-
-        // Extrair dados (63 bytes)
-        unsigned char dados[DATA_SIZE];
-        memcpy(dados, &buffer[3], DATA_SIZE);
-
-        // Extrair CRC do pacote
-        unsigned char crc_recebido = buffer[3 + DATA_SIZE];
-
-        // Calcula o CRC dos dados recebidos
-        unsigned char crc_calculado = calcula_crc(dados, DATA_SIZE);
-
-        // Verifica a integridade do pacote pelo CRC
-        if (crc_recebido != crc_calculado) {
-            fprintf(stderr, "Erro: CRC inválido! Esperado %02x, Recebido %02x\n", crc_calculado, crc_recebido);
-            continue;
-        }
-
-        // Exibir conteúdo do pacote decodificado
-        printf("Pacote recebido com %ld bytes:\n", tamanho_recebido);
+        // Exibe conteúdo do pacote decodificado
+        printf("Pacote recebido:\n");
         printf("  Tamanho: %u\n", tamanho);
         printf("  Sequência: %u\n", sequencia);
         printf("  Tipo: %u\n", tipo);
