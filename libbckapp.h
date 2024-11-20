@@ -45,6 +45,6 @@ int le_arquivo(FILE* arquivo, void* buffer, int tamanho_buffer);
 //Calcula o checksum do arquivo
 //Retorna o tamnho do arquivo em bytes, recebe o caminho completo do arq
 //Salva o valor od cksum no segundo parametro
-long long cksum(char* caminho_completo, long long valor_cksum);
+long long cksum(char* caminho_completo, long long* valor_cksum);
 
 #endif

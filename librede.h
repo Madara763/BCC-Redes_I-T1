@@ -19,9 +19,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MARKER 126       // Valor esperado para o marcador de início
-#define DATA_SIZE 63      // Tamanho do campo Dados
-#define CRC_SEED 0xFF     // CRC inicial
+#define MARKER 126         // Valor esperado para o marcador de início
+#define DATA_SIZE 63       // Tamanho do campo Dados
+#define CRC_SEED 0xFF      // CRC inicial
 
 
 //cria o sockets
@@ -44,6 +44,6 @@ void envia_pacote(void* pacote, char* interface, int soquete);
 
 // prepara o pacote para envia-lo
 //separa a dados em seus respectivos indices detrno do pacote e de toda a mensagem; 
-void* prepara_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados);
+void* monta_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados);
 
 #endif

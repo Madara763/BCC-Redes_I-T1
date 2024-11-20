@@ -7,7 +7,7 @@
 */
 #include "libbckapp.h"
 
-//--------------------FUNCOES INTERNAS--------------------
+//--------------------FUNCOES INTERNAS----------------------
 
 //recebe nome e o caminho e concatena eles
 void geraCaminhoCompleto(const char* caminho, const char* nome, char* l_caminho){
@@ -87,9 +87,9 @@ int le_arquivo(FILE* arquivo, void* buffer, int tamanho_buffer){
 }
 
 //Calcula o checksum do arquivo
-//Retorna o tamnho do arquivo em bytes, recebe o caminho completo do arq
-//Salva o valor od cksum no segundo parametro
-long long cksum(char* caminho_completo, long long valor_cksum){
+//Retorna o valor do cksum, recebe o caminho completo do arq
+//Salva o  tamanho do arquivo em bytes no segundo parametro
+long long cksum(char* caminho_completo, long long* total_bytes){
 
   //Verifica se o arquivo existe
   FILE* arq=fopen(caminho_completo, "r");
@@ -102,14 +102,24 @@ long long cksum(char* caminho_completo, long long valor_cksum){
   char comando[8192];
   sprintf(comando, "cksum %s > %s ", caminho_completo, NOME_ARQ_CKSUM);
   system(comando);
-
-  //Le arquivo criado pelo cksum
-  
-  
-
   fclose(arq);
 
-  return 0;
+  //Le arquivo criado pelo cksum
+  long long vlr_cksum=0, bytes=0;
+  arq=fopen(NOME_ARQ_CKSUM, "r");
+  if(!arq){fprintf(stderr, "Erro ao ler aquivo.\n"); return 0;}
+  
+  if( fscanf(arq, "%lli", &vlr_cksum ) == 0 ) {fprintf(stderr, "Erro ao ler checksum.\n"); return 0;}
+  if( fscanf(arq, "%lli", &bytes ) == 0 ) {fprintf(stderr, "Erro ao ler checksum.\n"); return 0;}
+  fclose(arq);
+
+  //apaga arquivo temporario
+  sprintf(comando, "rm %s", NOME_ARQ_CKSUM);
+  system(comando);
+  
+  //retorna e finaliza
+  *total_bytes = bytes;
+  return vlr_cksum;
 
 }
 

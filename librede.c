@@ -79,7 +79,7 @@ void envia_pacote(void* pacote, char* interface, int soquete){
 }
 
 
-void* prepara_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados){
+void* monta_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados){
 
   //tamanho pacote = 4 + tam
   void* pacote=malloc(tam + 4);

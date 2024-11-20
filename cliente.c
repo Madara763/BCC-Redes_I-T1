@@ -179,60 +179,16 @@ int main(int argc, char **argv, char **envp){
       fclose(arquivo);
       break;
 
-    //consulta
-    case 'c': 
+    //verifica
+    case 'v': 
       trata_nome_dir(nome_arq, nome, caminho, caminho_completo);
 
-      long long valor_cksum=0, tam_arq=cksum(caminho_completo, valor_cksum);
-      
-      /*
-      //FAZ O ENVIO DO CAMINHO COMPLETO DO ARQUIVO
-      seq=0;
-      tam_nome=strlen(caminho_completo);
-      ptr_buffer = caminho_completo; //aponta pro inicio do caminho
-              
-      //sequencializa, prepara e envia se o total de dados do nome eh maior de 63
-      while(tam_nome > TAM_MAX_DADOS){
-
-        tam_dados_msg = TAM_MAX_DADOS;
-        pacote = prepara_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
-        
-        if(imprime_pacote(pacote)){         //se o envio deu certo
-          tam_nome -= tam_dados_msg;        //diminui a quantidade restante
-          seq = inc_sequencia(seq);         //prepara a proxima sequencia
-          ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
-          free(pacote);
-        }
-        else{                               //se o envio deu errado
-          if(cont_erro > MAX_ERROS){
-            fprintf(stderr, MSG_ERRO_ENVIO);
-            return 1;
-          }
-          cont_erro++;                    
-        }
-      }
-
-      //Envia o final do buffer com tamnho menor que 63 bytes
-      tam_dados_msg = tam_nome;
-      pacote = prepara_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
-
-      if(imprime_pacote(pacote) ){        //se o envio deu certo
-        tam_nome -= tam_dados_msg;        //diminui a quantidade restante
-        seq = inc_sequencia(seq);         //prepara a proxima sequencia
-        ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
-        free(pacote);     
-      }
-      else{                               //se o envio deu errado
-        if(cont_erro > MAX_ERROS){
-          fprintf(stderr, MSG_ERRO_ENVIO);
-          return 1;
-        }
-        cont_erro++;
-      }
-      */
-
+      long long tam_arq=0, valor_cksum;
+      valor_cksum=cksum(caminho_completo, &tam_arq);
+      printf("CheckSum -> %lli %lli\n", valor_cksum, tam_arq);
 
       printf("Checando se há backup de: %s/%s ...\n", caminho, nome);
+
       break;
 
     //retaura
@@ -257,22 +213,22 @@ int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nom
   /*
     -h ou --help exibe ajuda
     -b -> backup
-    -c -> consulta arquivo
+    -v -> verifica arquivo
     -r -> restaura arquivo
   */
-  char options[]="hb:r:c:";
+  char options[]="hb:r:v:";
   char msg_erro[]="Opção inválida, consulte as opções -h ou --help.\n";
   char msg_ajuda[]=" ./prog -opt nome_arquivo \n\
   opções: \n\
     -b: BACKUP - Envia o arquivo ao servidor.\n\
-    -c: CONSULTAR - Consulta se o arquivo existe no servidor.\n\
+    -v: VERIFICAR - Consulta se o arquivo existe no servidor.\n\
     -r: RESTAURAR - Restaura o arquivo do servidor no diretório corrente.\n\
     -h ou --help: AJUDA -  Exibe essa mensagem de ajuda.\n \
   \nBCKAPP - v1.0 \n";
 
   *opt = getopt (argc, argv, options);
   
-  if((*opt == 'b' || *opt == 'c' || *opt == 'r' ) && argc == 3 )
+  if((*opt == 'b' || *opt == 'v' || *opt == 'r' ) && argc == 3 )
     *nome_arq = argv[2];
 
   else
