@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "libbckapp.h" 
+#include "librede.h"
 
 #define TAM_MAX_DADOS 63
 #define MAX_ERROS 5
@@ -48,7 +49,6 @@ int imprime_pacote(void* pacote){
 }
 
 
-
 int main(int argc, char **argv, char **envp){
 
   //alocacao de mem. e definicao de variaveis
@@ -71,7 +71,12 @@ int main(int argc, char **argv, char **envp){
   
   //verifica os parametros da main
   if(!trata_entrada(argc, argv, envp, &opt, &nome_arq)) return 0;
-  
+
+  //Criacao socket
+  char* interface="enp9s0";
+  int socket=cria_raw_socket(interface);
+
+
   //Menu, executa a funcionalidade chamada pelo usuario
   switch (opt)
   {
@@ -88,9 +93,9 @@ int main(int argc, char **argv, char **envp){
       while(tam_nome > TAM_MAX_DADOS){
 
         tam_dados_msg = TAM_MAX_DADOS;
-        pacote = prepara_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
+        pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
         
-        if(imprime_pacote(pacote)){         //se o envio deu certo
+        if(envia_pacote( pacote, interface, socket)){         //se o envio deu certo
           tam_nome -= tam_dados_msg;        //diminui a quantidade restante
           seq = inc_sequencia(seq);         //prepara a proxima sequencia
           ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
@@ -107,9 +112,9 @@ int main(int argc, char **argv, char **envp){
 
       //Envia o final do buffer com tamanho menor que 63 bytes
       tam_dados_msg = tam_nome;
-      pacote = prepara_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
+      pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
 
-      if(imprime_pacote(pacote) ){        //se o envio deu certo
+      if(envia_pacote( pacote, interface, socket) ){        //se o envio deu certo
         tam_nome -= tam_dados_msg;        //diminui a quantidade restante
         seq = inc_sequencia(seq);         //prepara a proxima sequencia
         ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
@@ -136,9 +141,9 @@ int main(int argc, char **argv, char **envp){
         while(lidos > TAM_MAX_DADOS){
 
           tam_dados_msg = TAM_MAX_DADOS;
-          pacote = prepara_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
+          pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
           
-          if(imprime_pacote(pacote)){         //se o envio deu certo
+          if(envia_pacote( pacote, interface, socket)){         //se o envio deu certo
             lidos -= tam_dados_msg;           //diminui a quantidade restante
             seq = inc_sequencia(seq);         //prepara a proxima sequencia
             ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
@@ -155,9 +160,9 @@ int main(int argc, char **argv, char **envp){
 
         //Envia o final do buffer com tamnho menor que 63 bytes
         tam_dados_msg = lidos;
-        pacote = prepara_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
+        pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
 
-        if(imprime_pacote(pacote) ){        //se o envio deu certo
+        if( envia_pacote( pacote, interface, socket) ){        //se o envio deu certo
           lidos -= tam_dados_msg;           //diminui a quantidade restante
           seq = inc_sequencia(seq);         //prepara a proxima sequencia
           ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer

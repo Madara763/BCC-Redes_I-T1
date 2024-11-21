@@ -24,6 +24,18 @@ int cria_raw_socket(char* nome_interface_rede) {
         exit(-1);
     }
 
+    //Modo promíscuo
+    struct packet_mreq mr = {0};
+    mr.mr_ifindex = ifindex;
+    mr.mr_type = PACKET_MR_PROMISC;
+    // Não joga fora o que identifica como lixo
+    if (setsockopt(soquete, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mr, sizeof(mr)) == -1) {
+        fprintf(stderr, "Erro ao fazer setsockopt: "
+            "Verifique se a interface de rede foi especificada corretamente.\n");
+        exit(-1);
+    }
+
+
     return soquete;
 }
 
@@ -58,10 +70,10 @@ void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char
     memcpy(dados, &buffer[3], DATA_SIZE);
 }
 
-void envia_pacote(void* pacote, char* interface, int soquete){
+int envia_pacote(void* pacote, char* interface, int soquete){
 
     //declarando estrutura para o endereço de destino
-    struct sockaddr_ll destino = {0};  // Endereço do destinatário
+    struct sockaddr_ll destino = {0} ;  // Endereço do destinatário
     destino.sll_ifindex = if_nametoindex(interface);
     destino.sll_halen = ETH_ALEN;
     memset(destino.sll_addr, 0xFF, ETH_ALEN);  
@@ -72,10 +84,9 @@ void envia_pacote(void* pacote, char* interface, int soquete){
     if (sendto(soquete, pacote, 4 + DATA_SIZE, 0, (struct sockaddr*)&destino, sizeof(destino)) < 0) {
         perror("Erro ao enviar pacote");
         close(soquete);
-        exit(-1);
+        return 0;
     }
-
-
+    return 1;
 }
 
 

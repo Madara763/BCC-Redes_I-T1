@@ -40,7 +40,7 @@ void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char
 
 
 //Envia o pacote atraves do soquete
-void envia_pacote(void* pacote, char* interface, int soquete);
+int envia_pacote(void* pacote, char* interface, int soquete);
 
 // prepara o pacote para envia-lo
 //separa a dados em seus respectivos indices detrno do pacote e de toda a mensagem; 
