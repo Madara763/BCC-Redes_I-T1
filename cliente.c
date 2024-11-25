@@ -73,7 +73,7 @@ int main(int argc, char **argv, char **envp){
   if(!trata_entrada(argc, argv, envp, &opt, &nome_arq)) return 0;
 
   //Criacao socket
-  char* interface="enp9s0";
+  char* interface="enp7s0";
   int socket=cria_raw_socket(interface);
 
 

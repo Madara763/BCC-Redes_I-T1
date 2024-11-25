@@ -78,7 +78,7 @@ void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char
 }
 
 int main() {
-    char *interface = "lo";  // Usando loopback
+    char *interface = "eth0";  // Usando loopback
     int soquete = cria_raw_socket(interface);
     unsigned char buffer[ETH_FRAME_LEN];  // Receberá toda a mensagem enviada
     short int flag;  // Flag para identificar se o marcador de início está correto

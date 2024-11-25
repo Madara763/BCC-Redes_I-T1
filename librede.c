@@ -50,7 +50,7 @@ short int verifica_marcador(unsigned char* buffer) {
 
 void recebe_pacote(int soquete, unsigned char* buffer) {
     // Receber pacotes
-    ssize_t tamanho_recebido = recvfrom(soquete, buffer, ETH_FRAME_LEN, 0, NULL, NULL);
+    ssize_t tamanho_recebido = recv(soquete, buffer, ETH_FRAME_LEN, 0);
     if (tamanho_recebido < 0) {
         perror("Erro ao receber pacote");
         close(soquete);
@@ -81,7 +81,7 @@ int envia_pacote(void* pacote, char* interface, int soquete){
     //envia o pacote usando sendto()
     printf("Enviando pacote...\n");
     // Envia o pacote
-    if (sendto(soquete, pacote, 4 + DATA_SIZE, 0, (struct sockaddr*)&destino, sizeof(destino)) < 0) {
+    if (send(soquete, pacote, 4 + DATA_SIZE, 0) < 0) {
         perror("Erro ao enviar pacote");
         close(soquete);
         return 0;
