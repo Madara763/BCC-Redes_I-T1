@@ -78,6 +78,7 @@ void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char
     *sequencia = ((buffer[1] & 0x03) << 3) | (buffer[2] >> 5);
 
     // Extrair tipo (5 bits)
+    
     *tipo = buffer[2] & 0x1F;
 
     // Extrair dados (63 bytes)
