@@ -7,18 +7,13 @@
 #include <string.h>
 #include <unistd.h>
 
+
 #define MARKER 126        // Valor esperado para o marcador de início
 #define DATA_SIZE 63      // Tamanho do campo Dados
 #define CRC_SEED 0xFF     // CRC inicial
 
-// Função para calcular o CRC simples de 8 bits
-// unsigned char calcula_crc(unsigned char* dados, size_t tamanho) {
-//     unsigned char crc = CRC_SEED;
-//     for (size_t i = 0; i < tamanho; i++) {
-//         crc ^= dados[i];
-//     }
-//     return crc;
-// }
+
+#include "librede.h"
 
 int cria_raw_socket(char* nome_interface_rede) {
     int soquete = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
@@ -43,6 +38,18 @@ int cria_raw_socket(char* nome_interface_rede) {
         exit(-1);
     }
 
+    //Modo promíscuo
+    struct packet_mreq mr = {0};
+    mr.mr_ifindex = ifindex;
+    mr.mr_type = PACKET_MR_PROMISC;
+    // Não joga fora o que identifica como lixo
+    if (setsockopt(soquete, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mr, sizeof(mr)) == -1) {
+        fprintf(stderr, "Erro ao fazer setsockopt: "
+            "Verifique se a interface de rede foi especificada corretamente.\n");
+        exit(-1);
+    }
+
+
     return soquete;
 }
 
@@ -57,7 +64,7 @@ short int verifica_marcador(unsigned char* buffer) {
 
 void recebe_pacote(int soquete, unsigned char* buffer) {
     // Receber pacotes
-    ssize_t tamanho_recebido = recvfrom(soquete, buffer, ETH_FRAME_LEN, 0, NULL, NULL);
+    ssize_t tamanho_recebido = recv(soquete, buffer, ETH_FRAME_LEN, 0);
     if (tamanho_recebido < 0) {
         perror("Erro ao receber pacote");
         close(soquete);
@@ -75,6 +82,47 @@ void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char
 
     // Extrair dados (63 bytes)
     memcpy(dados, &buffer[3], DATA_SIZE);
+}
+
+int envia_pacote(void* pacote, char* interface, int soquete){
+
+    //declarando estrutura para o endereço de destino
+    struct sockaddr_ll destino = {0} ;  // Endereço do destinatário
+    destino.sll_ifindex = if_nametoindex(interface);
+    destino.sll_halen = ETH_ALEN;
+    memset(destino.sll_addr, 0xFF, ETH_ALEN);  
+
+    //envia o pacote usando sendto()
+    printf("Enviando pacote...\n");
+    // Envia o pacote
+    if (send(soquete, pacote, 4 + DATA_SIZE, 0) < 0) {
+        perror("Erro ao enviar pacote");
+        close(soquete);
+        return 0;
+    }
+    return 1;
+}
+
+
+void* monta_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados){
+
+  //tamanho pacote = 4 + tam
+  void* pacote=malloc(tam + 4);
+  if(!pacote)
+    return NULL;
+  
+  ((char*) pacote)[0] = 126;
+  //em pacote [1] e pacote [2] colocar tamanho tamnho, seq e tipo
+  //nos teste a seq vai na 1 e o tamanho na 2
+  ((char*) pacote)[1] = sequencia;
+  ((char*) pacote)[2] = (char)tam;
+
+  //De pacote[3] ate pacote[2 + tam] vao os dados
+  memcpy(pacote + 3, dados, tam );
+  
+  //pacote tam+3 recebe o crc 
+  ((char*) pacote)[tam + 3] = '\0';
+  return pacote;
 }
 
 int main() {

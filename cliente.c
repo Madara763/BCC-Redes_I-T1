@@ -194,6 +194,10 @@ int main(int argc, char **argv, char **envp){
 
       printf("Checando se há backup de: %s/%s ...\n", caminho, nome);
 
+      pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
+        
+      envia_pacote( pacote, interface, socket);
+
       break;
 
     //retaura

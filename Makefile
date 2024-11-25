@@ -19,4 +19,4 @@ clean:
  
 # remove tudo o que não for o código-fonte
 purge: clean
-	-rm -f vinapp
+	-rm -f cliente
