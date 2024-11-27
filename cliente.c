@@ -7,12 +7,7 @@
 
 #define TAM_MAX_DADOS 63
 #define MAX_ERROS 5
-#define MAX_SEQ 31
 
-
-
-int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq );
-int inc_sequencia(int seq);
 
 void* prepara_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados){
 
@@ -189,14 +184,12 @@ int main(int argc, char **argv, char **envp){
       trata_nome_dir(nome_arq, nome, caminho, caminho_completo);
 
       long long tam_arq=0, valor_cksum;
+      
       valor_cksum=cksum(caminho_completo, &tam_arq);
+
       printf("CheckSum -> %lli %lli\n", valor_cksum, tam_arq);
 
       printf("Checando se há backup de: %s/%s ...\n", caminho, nome);
-
-      pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
-        
-      envia_pacote( pacote, interface, socket);
 
       break;
 
@@ -213,55 +206,4 @@ int main(int argc, char **argv, char **envp){
 
   free(buffer);
   return 0;
-}
-
-//retorna 1 se a entrada e valida, e 0 cc
-//o identificador da opc e retornado em opt, e o nome do arquivo em nome_arq
-//Imprime o help e avisa em caso de arguemntos invalidos
-int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq ){
-  /*
-    -h ou --help exibe ajuda
-    -b -> backup
-    -v -> verifica arquivo
-    -r -> restaura arquivo
-  */
-  char options[]="hb:r:v:";
-  char msg_erro[]="Opção inválida, consulte as opções -h ou --help.\n";
-  char msg_ajuda[]=" ./prog -opt nome_arquivo \n\
-  opções: \n\
-    -b: BACKUP - Envia o arquivo ao servidor.\n\
-    -v: VERIFICAR - Consulta se o arquivo existe no servidor.\n\
-    -r: RESTAURAR - Restaura o arquivo do servidor no diretório corrente.\n\
-    -h ou --help: AJUDA -  Exibe essa mensagem de ajuda.\n \
-  \nBCKAPP - v1.0 \n";
-
-  *opt = getopt (argc, argv, options);
-  
-  if((*opt == 'b' || *opt == 'v' || *opt == 'r' ) && argc == 3 )
-    *nome_arq = argv[2];
-
-  else
-    if( (argc == 2 && !strcmp(argv[1], "--help")) || *opt == 'h' ) 
-      printf("%s", msg_ajuda); 
-    
-    else{
-      printf("%s", msg_erro); 
-      return 0;
-    }
-
-  return 1;
-}
-
-
-//Incrementa a sequencia da msg
-//Se for to manhao maximo volta ao 0
-//Retorna o valor incrementado
-int inc_sequencia(int seq){
-  int ret = seq;
-  if(seq < MAX_SEQ )
-    ret++;
-  else
-    ret=0;
-
-  return ret;
 }

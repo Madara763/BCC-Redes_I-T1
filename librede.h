@@ -1,11 +1,10 @@
 /*
-  Essa biblioteca implementa funcoes de manipulacao de arquivos e diretorios 
+  Essa biblioteca implementa funcoes de manipulacao pacotes e envio/recebimento em rede 
   Desenvolvida para uso no Trabalho 1 de Redes de BCC - UFPR
 
   Criado por Davi Garcia Lazzarin e Mardoqueu Freire Nunes
   Data: 18/11/2024
 */
-
 
 #ifndef _LIBREDE_
 #define _LIBREDE_
@@ -23,7 +22,6 @@
 #define DATA_SIZE 63       // Tamanho do campo Dados
 #define CRC_SEED 0xFF      // CRC inicial
 
-
 //cria o sockets
 int cria_raw_socket(char* nome_interface_rede);
 
@@ -37,7 +35,6 @@ void recebe_pacote(int soquete, unsigned char* buffer);
 //Essa função desmonta a mensagem separando cada seção e guardando nas variaveis do parametro
 //dados esse recebeos os dados enviados!
 void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char* tamanho, unsigned char* sequencia, unsigned char* tipo);
-
 
 //Envia o pacote atraves do soquete
 int envia_pacote(void* pacote, char* interface, int soquete);

@@ -1,3 +1,10 @@
+/*
+  Essa biblioteca implementa funcoes de manipulacao pacotes e envio/recebimento em rede
+  Desenvolvida para uso no Trabalho 1 de Redes de BCC - UFPR
+
+  Criado por Davi Garcia Lazzarin e Mardoqueu Freire Nunes
+  Data: 18/11/2024
+*/
 
 #include "librede.h"
 
@@ -34,7 +41,6 @@ int cria_raw_socket(char* nome_interface_rede) {
             "Verifique se a interface de rede foi especificada corretamente.\n");
         exit(-1);
     }
-
 
     return soquete;
 }

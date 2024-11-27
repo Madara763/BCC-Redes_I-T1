@@ -5,6 +5,7 @@
   Criado por Davi Garcia Lazzarin e Mardoqueu Freire Nunes
   Data: 27/10/2024
 */
+
 #include "libbckapp.h"
 
 //--------------------FUNCOES INTERNAS----------------------
@@ -121,5 +122,56 @@ long long cksum(char* caminho_completo, long long* total_bytes){
   *total_bytes = bytes;
   return vlr_cksum;
 
+}
+
+//retorna 1 se a entrada e valida, e 0 cc
+//o identificador da opc e retornado em opt, e o nome do arquivo em nome_arq
+//Imprime o help e avisa em caso de arguemntos invalidos
+int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq ){
+  /*
+    -h ou --help exibe ajuda
+    -b -> backup
+    -v -> verifica arquivo
+    -r -> restaura arquivo
+  */
+  char options[]="hb:r:v:";
+  char msg_erro[]="Opção inválida, consulte as opções -h ou --help.\n";
+  char msg_ajuda[]=" ./prog -opt nome_arquivo \n\
+  opções: \n\
+    -b: BACKUP - Envia o arquivo ao servidor.\n\
+    -v: VERIFICAR - Consulta se o arquivo existe no servidor.\n\
+    -r: RESTAURAR - Restaura o arquivo do servidor no diretório corrente.\n\
+    -h ou --help: AJUDA -  Exibe essa mensagem de ajuda.\n \
+  \nBCKAPP - v1.0 \n";
+
+  *opt = getopt (argc, argv, options);
+  
+  if((*opt == 'b' || *opt == 'v' || *opt == 'r' ) && argc == 3 )
+    *nome_arq = argv[2];
+
+  else
+    if( (argc == 2 && !strcmp(argv[1], "--help")) || *opt == 'h' ) 
+      printf("%s", msg_ajuda); 
+    
+    else{
+      printf("%s", msg_erro); 
+      return 0;
+    }
+
+  return 1;
+}
+
+
+//Incrementa a sequencia da msg
+//Se for to manhao maximo volta ao 0
+//Retorna o valor incrementado
+int inc_sequencia(int seq){
+  int ret = seq;
+  if(seq < MAX_SEQ )
+    ret++;
+  else
+    ret=0;
+
+  return ret;
 }
 

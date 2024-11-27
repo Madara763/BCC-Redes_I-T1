@@ -16,15 +16,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NAME_SIZE 256
-#define PATH_SIZE 4096
-#define TAM_BUFFER 4096
+#define NAME_SIZE 256    //Tamanho maximo nome do arquivo
+#define PATH_SIZE 4096   //Tamanho maximo caminho do arquivo
+#define TAM_BUFFER 4096  //Tamanho maximo buffer de leitura do arquivo
+#define MAX_SEQ 31       //Sequencia maxima nas mensagens (maximo em 5 bits)
+
 
 #define NOME_ARQ_CKSUM "Arquivo_temporario_do_cksum.tmp"
-
 #define MSG_ERRO_ENVIO "Não foi possivel enviar arquivo.\n"
-
-
 
 //Funcao recebe em nome_arq um nome de arquivo ou diretorio???
 //Retorna o nome e o caminho 
@@ -46,5 +45,15 @@ int le_arquivo(FILE* arquivo, void* buffer, int tamanho_buffer);
 //Retorna o tamnho do arquivo em bytes, recebe o caminho completo do arq
 //Salva o valor od cksum no segundo parametro
 long long cksum(char* caminho_completo, long long* valor_cksum);
+
+//retorna 1 se a entrada e valida, e 0 cc
+//o identificador da opc e retornado em opt, e o nome do arquivo em nome_arq
+//Imprime o help e avisa em caso de arguemntos invalidos
+int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nome_arq );
+
+//Incrementa a sequencia da msg
+//Se for to manhao maximo volta ao 0
+//Retorna o valor incrementado
+int inc_sequencia(int seq);
 
 #endif

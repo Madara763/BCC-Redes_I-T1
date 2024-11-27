@@ -1,22 +1,26 @@
 CFLAGS = -Wall -g  # gerar "warnings" detalhados e infos de depuração
  
-objs = cliente.o libbckapp.o librede.o
+objc = cliente.o libbckapp.o librede.o
+objs = servidor.o libbckapp.o librede.o
 
 # regra default (primeira regra)
-all: cliente
+all: cliente servidor
  
 # regras de ligacao
-cliente:	$(objs)
+cliente:	$(objc)
+servidor:	$(objs)
  
 # regras de compilação
 cliente.o:	cliente.c
+servidor.o:	servidor.c
 libbckapp.o:	libbckapp.c
-librede.o:	librede.c 
+librede.o:	librede.c
+
 
 # remove arquivos temporários
 clean:
-	-rm -f $(objs) *~
+	-rm -f $(objs) $(objc) *~
  
 # remove tudo o que não for o código-fonte
 purge: clean
-	-rm -f cliente
+	-rm -f cliente 
