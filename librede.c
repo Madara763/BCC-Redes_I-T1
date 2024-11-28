@@ -65,16 +65,17 @@ int cria_raw_socket(char* nome_interface_rede) {
     return soquete;
 }
 
-short int verifica_marcador(unsigned char* buffer) {
+int verifica_marcador(unsigned char* buffer) {
     // Verifica se o marcador de início é válido
     if (buffer[0] != MARKER) {
         printf("Marcador de início inválido!\n");
-        return 1;
+        return 0;
     }
-    return 0;
+    return 1;
 }
 
-void recebe_pacote(int soquete, unsigned char* buffer) {
+int recebe_pacote(int soquete, unsigned char* buffer) {
+
     // Receber pacotes
     ssize_t tamanho_recebido = recv(soquete, buffer, ETH_FRAME_LEN, 0);
     if (tamanho_recebido < 0) {
@@ -82,6 +83,9 @@ void recebe_pacote(int soquete, unsigned char* buffer) {
         close(soquete);
         exit(-1);
     }
+
+    return verifica_marcador(buffer);
+
 }
 
 void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char* tamanho, unsigned char* sequencia, unsigned char* tipo) {

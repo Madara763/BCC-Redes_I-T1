@@ -17,23 +17,39 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
+#include <sys/time.h>
 
 #define MARKER 126         // Valor esperado para o marcador de início
 #define DATA_SIZE 63       // Tamanho do campo Dados
 #define CRC_SEED 0xFF      // CRC inicial
 
-#define TP_BACKUP_INI 4 //00100 backup – inidica realização de backup
+#define TP_ACK 0          //00000 ACK
+#define TP_ACK 1          //00001 NACK
+#define TP_ACK 2          //00010 OK
+
+#define TP_BACKUP_INI 4   //00100 backup – inidica realização de backup
+#define TP_RESTAURA_INI 5 //00101 restaura – indica realização de restaura
+#define TP_VERIFICA_INI 6 //00110 verefica – indica realização de verificação
+
+#define TP_ENVIA_NOME 7   //00111 Envia o nome do arquivo
+
+
+#define TP_ENVIO 16       //10000 enviando dados
+#define TP_FIM_ENVIO 17   //10001 Fim da transmissão
+
+#define TP_ACK 31         //11111 ERRO
 
 /*
 Tabela de Tipos
 TIPOS DEFINIÇÂO
 00000 ACK – tudo ok, manda o próximo pedaço/arquivo
-00001 NACK – problema de crc, não entendi e mando dnv, se ocorrer
-manda dnv
+00001 NACK – problema de crc, não entendi e mando dnv, se ocorrer manda dnv
 00010 OK – Tudo certo.
 00100 backup – inidica realização de backup
 00101 restaura – indica realização de restaura
 00110 verefica – indica realização de vereficação
+
 11111 Erro – um código de erro
 10000 Dados – enviando dados
 01111 Tamanho
@@ -46,11 +62,12 @@ manda dnv
 int cria_raw_socket(char* nome_interface_rede);
 
 //verifica o marcador de inicio da mensagem - se ele é valido ou nao
-short int verifica_marcador(unsigned char* buffer);
+int verifica_marcador(unsigned char* buffer);
 
 //essa funcção apenas recebe o pacote atraves do soquete
 //guarda os dados em buffer para ser desmontado
-void recebe_pacote(int soquete, unsigned char* buffer);
+//retorna 1 se o pacote eh valido e 0 cc
+int recebe_pacote(int soquete, unsigned char* buffer);
 
 //Essa função desmonta a mensagem separando cada seção e guardando nas variaveis do parametro
 //dados esse recebeos os dados enviados!

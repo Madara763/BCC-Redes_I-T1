@@ -9,41 +9,6 @@
 #define MAX_ERROS 5
 
 
-// void* prepara_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados){
-
-//   //tamanho pacote = 4 + tam
-//   void* pacote=malloc(tam + 4);
-//   if(!pacote)
-//     return NULL;
-  
-//   ((char*) pacote)[0] = 126;
-//   //em pacote [1] e pacote [2] colocar tamanho tamnho, seq e tipo
-//   //nos teste a seq vai na 1 e o tamanho na 2
-//   ((char*) pacote)[1] = sequencia;
-//   ((char*) pacote)[2] = (char)tam;
-
-//   //De pacote[3] ate pacote[2 + tam] vao os dados
-//   memcpy(pacote + 3, dados, tam );
-  
-//   //pacote tam+3 recebe o crc 
-//   ((char*) pacote)[tam + 3] = '\0';
-//   return pacote;
-// } 
-
-// //imprime os dados do pacote
-// int imprime_pacote(void* pacote){
-
-//   //printf("Recebe a msg com sequencia: %i \nE tamanho: %i\n", ((char*) pacote)[1], ((char*) pacote)[2]);
-//   //printf("%s", ((char*) pacote+3));
-//   for(int i=3; i < ((char*) pacote)[2] +3; i++){
-//     printf("%c", ((char*) pacote)[i]);
-//   }
-  
-//   //printf("\n\n");
-//   return 1;
-// }
-
-
 int main(int argc, char **argv, char **envp){
 
   //alocacao de mem. e definicao de variaveis
@@ -79,12 +44,12 @@ int main(int argc, char **argv, char **envp){
     case 'b': 
       trata_nome_dir(nome_arq, nome, caminho, caminho_completo );
 
-      //FAZ O ENVIO DO CAMINHO COMPLETO DO ARQUIVO
+      //FAZ O ENVIO DO NOME DO ARQUIVO
       tipo = TP_BACKUP_INI;
       
-      seq=0;
-      tam_nome=strlen(caminho_completo);
-      ptr_buffer = caminho_completo; //aponta pro inicio do caminho
+      seq = 0;
+      tam_nome = strlen(nome);
+      ptr_buffer = nome; //aponta pro inicio do nome
               
       //sequencializa, prepara e envia se o total de dados do nome eh maior de 63
       while(tam_nome > TAM_MAX_DADOS){
