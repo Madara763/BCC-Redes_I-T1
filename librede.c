@@ -25,16 +25,6 @@ void compactar_valores(void* pacote,  int tamanho, unsigned int sequencia, unsig
     ((char*) pacote)[2] = combinado & 0xFF;        // Byte menos significativo
 }
 
-void descompactar_valores(unsigned char vetor[2], unsigned int *tamanho, unsigned int *sequencia, unsigned int *tipo) {
-    // Reconstruir o valor combinado
-    unsigned short combinado = (vetor[0] << 8) | vetor[1];
-
-    // Extrair os valores
-    *tamanho = (combinado >> 10) & 0x3F;     // 6 bits
-    *sequencia = (combinado >> 5) & 0x1F;   // 5 bits
-    *tipo = combinado & 0x1F;              // 5 bits
-}
-
 
 //--------------------FUNCOES BIBLIOTECA--------------------
 

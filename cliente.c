@@ -80,6 +80,8 @@ int main(int argc, char **argv, char **envp){
       trata_nome_dir(nome_arq, nome, caminho, caminho_completo );
 
       //FAZ O ENVIO DO CAMINHO COMPLETO DO ARQUIVO
+      tipo = TP_BACKUP_INI;
+      
       seq=0;
       tam_nome=strlen(caminho_completo);
       ptr_buffer = caminho_completo; //aponta pro inicio do caminho

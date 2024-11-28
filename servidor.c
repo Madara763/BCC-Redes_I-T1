@@ -15,6 +15,11 @@
 
 
 int main() {
+
+    //Nomes Interface
+    //Notebook Davi - enp7s0
+    //PC Davi - enp9s0
+
     char *interface = "eth0";                 // Nome da Interface de rede usada
     int soquete = cria_raw_socket(interface);
     unsigned char buffer[ETH_FRAME_LEN];      // Receberá toda a mensagem enviada
@@ -39,6 +44,9 @@ int main() {
 
         // Desmonta o pacote, colocando cada parte da mensagem nas variáveis passadas
         desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
+
+        if(tipo == TP_BACKUP_INI)
+            printf("INICO DE UM BKP\n");
 
         // Exibe conteúdo do pacote decodificado
         printf("Pacote recebido:\n");

@@ -22,6 +22,26 @@
 #define DATA_SIZE 63       // Tamanho do campo Dados
 #define CRC_SEED 0xFF      // CRC inicial
 
+#define TP_BACKUP_INI 4 //00100 backup – inidica realização de backup
+
+/*
+Tabela de Tipos
+TIPOS DEFINIÇÂO
+00000 ACK – tudo ok, manda o próximo pedaço/arquivo
+00001 NACK – problema de crc, não entendi e mando dnv, se ocorrer
+manda dnv
+00010 OK – Tudo certo.
+00100 backup – inidica realização de backup
+00101 restaura – indica realização de restaura
+00110 verefica – indica realização de vereficação
+11111 Erro – um código de erro
+10000 Dados – enviando dados
+01111 Tamanho
+10001 Fim da transmissão
+01110 ok + tamanho
+01101 ok+checksum – cksum() função de verificação de crc
+*/
+
 //cria o sockets
 int cria_raw_socket(char* nome_interface_rede);
 

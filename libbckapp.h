@@ -21,7 +21,6 @@
 #define TAM_BUFFER 4096  //Tamanho maximo buffer de leitura do arquivo
 #define MAX_SEQ 31       //Sequencia maxima nas mensagens (maximo em 5 bits)
 
-
 #define NOME_ARQ_CKSUM "Arquivo_temporario_do_cksum.tmp"
 #define MSG_ERRO_ENVIO "Não foi possivel enviar arquivo.\n"
 
