@@ -8,6 +8,36 @@
 
 #include "librede.h"
 
+
+//--------------------FUNCOES INTERNAS----------------------
+
+void compactar_valores(void* pacote,  int tamanho, unsigned int sequencia, unsigned int tipo) {
+    // Garantir que os valores estão dentro dos limites de bits
+    tamanho &= 0x3F;     // 6 bits (0b111111)
+    sequencia &= 0x1F;   // 5 bits (0b11111)
+    tipo &= 0x1F;        // 5 bits (0b11111)
+
+    // Compactar os valores em 2 bytes
+    unsigned short combinado = (tamanho << 10) | (sequencia << 5) | tipo;
+
+    // Dividir em dois bytes
+    ((char*) pacote)[1] = (combinado >> 8) & 0xFF; // Byte mais significativo
+    ((char*) pacote)[2] = combinado & 0xFF;        // Byte menos significativo
+}
+
+void descompactar_valores(unsigned char vetor[2], unsigned int *tamanho, unsigned int *sequencia, unsigned int *tipo) {
+    // Reconstruir o valor combinado
+    unsigned short combinado = (vetor[0] << 8) | vetor[1];
+
+    // Extrair os valores
+    *tamanho = (combinado >> 10) & 0x3F;     // 6 bits
+    *sequencia = (combinado >> 5) & 0x1F;   // 5 bits
+    *tipo = combinado & 0x1F;              // 5 bits
+}
+
+
+//--------------------FUNCOES BIBLIOTECA--------------------
+
 int cria_raw_socket(char* nome_interface_rede) {
     int soquete = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     if (soquete == -1) {
@@ -96,7 +126,7 @@ int envia_pacote(void* pacote, char* interface, int soquete){
 }
 
 
-void* monta_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados){
+void* monta_pacote(int tam, unsigned char sequencia, unsigned char tipo, void* dados){
 
   //tamanho pacote = 4 + tam
   void* pacote=malloc(tam + 4);
@@ -104,10 +134,12 @@ void* monta_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* 
     return NULL;
   
   ((char*) pacote)[0] = 126;
+
+  compactar_valores(pacote, tam, sequencia, tipo);
   //em pacote [1] e pacote [2] colocar tamanho tamnho, seq e tipo
   //nos teste a seq vai na 1 e o tamanho na 2
-  ((char*) pacote)[1] = sequencia;
-  ((char*) pacote)[2] = (char)tam;
+  //   ((char*) pacote)[1] = sequencia;
+  //   ((char*) pacote)[2] = (char)tam;
 
   //De pacote[3] ate pacote[2 + tam] vao os dados
   memcpy(pacote + 3, dados, tam );
