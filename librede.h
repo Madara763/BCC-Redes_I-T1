@@ -20,19 +20,20 @@
 #include <time.h>
 #include <sys/time.h>
 
-#define MARKER 126         // Valor esperado para o marcador de início
-#define DATA_SIZE 63       // Tamanho do campo Dados
-#define CRC_SEED 0xFF      // CRC inicial
+#define MARKER 126        // Valor esperado para o marcador de início
+#define DATA_SIZE 63      // Tamanho do campo Dados
+#define CRC_SEED 0xFF     // CRC inicial
 
 #define TP_ACK 0          //00000 ACK
-#define TP_ACK 1          //00001 NACK
-#define TP_ACK 2          //00010 OK
+#define TP_NACK 1         //00001 NACK
+#define TP_OK 2           //00010 OK
 
 #define TP_BACKUP_INI 4   //00100 backup – inidica realização de backup
 #define TP_RESTAURA_INI 5 //00101 restaura – indica realização de restaura
 #define TP_VERIFICA_INI 6 //00110 verefica – indica realização de verificação
 
 #define TP_ENVIA_NOME 7   //00111 Envia o nome do arquivo
+#define TP_ENVIA_ARQ 8    //01000 Marcador de inicio do envio do arquivo
 
 
 #define TP_ENVIO 16       //10000 enviando dados

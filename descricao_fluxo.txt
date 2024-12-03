@@ -1,0 +1,35 @@
+Descricao de fluxo de rede, comunicacao entre cliente e servidor:
+
+Toda msg enviada servidor -> cliente OU cliente -> servidor tera obrigatoriamente 
+uma msg de confirmacao ACK ou NACK por parte de quem recebeu
+
+se a resposta for ACK, envia a proxima parte
+se for NACK reenvia a msg (max 3 tentativas)
+
+Opcao de backup (-b):
+
+ENVIO DO NOME:
+
+Cliente: Envia msg com tipo de TP_BACKUP_INI 
+com os primeiros 63 caracteres do nome
+
+Servidor: Recebe e devolve se ok ou nao
+se o tamanho da msg for menor que 63, o servidor abre um arquivo com o nome recebido
+e aguarda o conteudo do arquivo
+
+Cliente: se ainda tiver nome a ser enviado, envia uma msg com tipo TP_ENVIO
+com os proximos 63 caracteres
+
+Servidor: Recebe e devolve se ok ou nao
+se o tamanho da msg for menor que 63, o servidor abre um arquivo com o nome recebido
+e aguarda o conteudo do arquivo
+
+Quando o envio do nome for menor que 63, servidor e cliente entendem que o nome acabou 
+
+ENVIO DO ARQUIVO:
+
+Cliente: Envia Marcador de inicio do envio do arquivo TP_ENVIA_ARQ
+Com os primeiros 63 bytes do arquivo
+
+Servidor: 
+awdadw

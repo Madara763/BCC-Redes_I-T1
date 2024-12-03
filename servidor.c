@@ -50,6 +50,7 @@ int main() {
         case TP_BACKUP_INI: //Inicio de um backup
             printf("Backup iniciado.\n");
             
+            
             while(tipo != TP_FIM_ENVIO){
                 
                 if (recebe_pacote(soquete, buffer))

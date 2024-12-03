@@ -46,11 +46,12 @@ int main(int argc, char **argv, char **envp){
 
       //FAZ O ENVIO DO NOME DO ARQUIVO
       tipo = TP_BACKUP_INI;
-      
+
       seq = 0;
       tam_nome = strlen(nome);
-      ptr_buffer = nome; //aponta pro inicio do nome
-              
+      ptr_buffer = nome;        //aponta pro inicio do nome
+
+    
       //sequencializa, prepara e envia se o total de dados do nome eh maior de 63
       while(tam_nome > TAM_MAX_DADOS){
 
@@ -89,6 +90,7 @@ int main(int argc, char **argv, char **envp){
         }
         cont_erro++;
       }
+
 
       //FAZ O ENVIO DO ARQUIVO
       seq=0;
