@@ -35,11 +35,10 @@
 #define TP_ENVIA_NOME 7   //00111 Envia o nome do arquivo
 #define TP_ENVIA_ARQ 8    //01000 Marcador de inicio do envio do arquivo
 
-
 #define TP_ENVIO 16       //10000 enviando dados
 #define TP_FIM_ENVIO 17   //10001 Fim da transmissão
 
-#define TP_ACK 31         //11111 ERRO
+#define TP_ERRO 31        //11111 ERRO
 
 /*
 Tabela de Tipos
@@ -77,7 +76,7 @@ void desmontar_pacote(unsigned char* buffer, unsigned char* dados, unsigned char
 //Envia o pacote atraves do soquete
 int envia_pacote(void* pacote, char* interface, int soquete);
 
-// prepara o pacote para envia-lo
+//prepara o pacote para envia-lo
 //separa a dados em seus respectivos indices detrno do pacote e de toda a mensagem; 
 void* monta_pacote(int tam, unsigned char sequencia, unsigned  char tipo, void* dados);
 

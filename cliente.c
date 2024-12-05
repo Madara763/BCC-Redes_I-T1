@@ -33,8 +33,8 @@ int main(int argc, char **argv, char **envp){
   if(!trata_entrada(argc, argv, envp, &opt, &nome_arq)) return 0;
 
   //Criacao socket
-  char* interface="enp9s0";
-  int socket=cria_raw_socket(interface);
+  char* interface="lo";
+  int socket = cria_raw_socket(interface);
 
 
   //Menu, executa a funcionalidade chamada pelo usuario
@@ -63,6 +63,8 @@ int main(int argc, char **argv, char **envp){
           seq = inc_sequencia(seq);         //prepara a proxima sequencia
           ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
           free(pacote);
+
+          tipo = TP_ENVIA_NOME;             //Define o tipo para os proximos envios
         }
         else{                               //se o envio deu errado
           if(cont_erro > MAX_ERROS){
@@ -71,6 +73,7 @@ int main(int argc, char **argv, char **envp){
           }
           cont_erro++;                    
         }
+
       }
 
       //Envia o final do buffer com tamanho menor que 63 bytes
@@ -91,6 +94,7 @@ int main(int argc, char **argv, char **envp){
         cont_erro++;
       }
 
+      system("pause");
 
       //FAZ O ENVIO DO ARQUIVO
       seq=0;

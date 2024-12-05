@@ -55,4 +55,8 @@ int trata_entrada(const int argc, char **argv, char **envp, int *opt, char **nom
 //Retorna o valor incrementado
 int inc_sequencia(int seq);
 
+//Cria um arquivo com o nome recebido 
+//Cria no subdiretorio corrente chamado arquivo_backup, cria o diretorio se nao existir
+FILE* cria_arq(char* nome_arq);
+
 #endif

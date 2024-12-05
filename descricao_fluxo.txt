@@ -17,7 +17,7 @@ Servidor: Recebe e devolve se ok ou nao
 se o tamanho da msg for menor que 63, o servidor abre um arquivo com o nome recebido
 e aguarda o conteudo do arquivo
 
-Cliente: se ainda tiver nome a ser enviado, envia uma msg com tipo TP_ENVIO
+Cliente: se ainda tiver nome a ser enviado, envia uma msg com tipo TP_ENVIA_NOME
 com os proximos 63 caracteres
 
 Servidor: Recebe e devolve se ok ou nao
@@ -32,4 +32,14 @@ Cliente: Envia Marcador de inicio do envio do arquivo TP_ENVIA_ARQ
 Com os primeiros 63 bytes do arquivo
 
 Servidor: 
-awdadw
+Recebe e devolve se ok ou nao
+Se ok, comeca a montar esses bytes na sequencia certa dentro do arquivo
+
+Cliente: Envia os proximos bytes com o tipo TP_ENVIO
+
+Servidor:
+Recebe vai montando o arquivo
+
+Cliente: Quando forem enviados o ultimo pacote com menos de 63bytes, envia com o TP_FIM_ENVIO
+
+Servidor: Recebe essa mensageme finaliza a recepcao.

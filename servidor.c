@@ -21,7 +21,7 @@ int main() {
     //Notebook Davi - enp7s0
     //PC Davi - enp9s0
 
-    char *interface = "eth0";                 // Nome da Interface de rede usada
+    char *interface = "lo";                 // Nome da Interface de rede usada
     int soquete = cria_raw_socket(interface);
     unsigned char buffer[ETH_FRAME_LEN];      // Receberá toda a mensagem enviada                       // Flag para identificar se o marcador de início está correto
     unsigned char dados[DATA_SIZE];           // Parte de dados da mensagem recebida
@@ -29,8 +29,14 @@ int main() {
     unsigned char sequencia = 0;              // Sequência da mensagem
     unsigned char tipo = 0;                   // Tipo da mensagem (ex: backup, restaura, verifica)
 
+    unsigned char sequencia_recebida = 0;     // Sequência da mensagem
+    
+    int i_aux;
+
     //Variaveis dos arquivos
-    char nome[NAME_SIZE];
+    char nome[NAME_SIZE] = {0};
+    void** buffer_seq = malloc(MAX_SEQ * sizeof(void *));
+    if(!buffer_seq)  return 0;
 
     printf("Aguardando pacotes...\n");
 
@@ -49,18 +55,35 @@ int main() {
         {
         case TP_BACKUP_INI: //Inicio de um backup
             printf("Backup iniciado.\n");
+
+            while (tamanho == DATA_SIZE){
+                if(tipo == TP_BACKUP_INI || tipo == TP_ENVIA_NOME){
+                    i_aux = (((int) sequencia) * 63) ;
+                    strncpy(nome + i_aux, (char *) dados, tamanho );
+                }
+
+                if (recebe_pacote(soquete, buffer))
+                    desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
+                else 
+                    continue;  
+            }
+
+            if(tipo == TP_BACKUP_INI || tipo == TP_ENVIA_NOME){
+                i_aux = (((int) sequencia) * 63) ;
+                strncpy(nome + i_aux, (char *) dados, tamanho );
+            }
             
-            
+            //Recebi o nome todo
+            cria_arq(nome);
+                
+
+
             while(tipo != TP_FIM_ENVIO){
                 
                 if (recebe_pacote(soquete, buffer))
                     desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
                 else
                     continue;       
-
-                if(tipo = TP_ENVIA_NOME){
-                    
-                }
 
             }//Backup Finalizado
 

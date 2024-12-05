@@ -123,7 +123,7 @@ int envia_pacote(void* pacote, char* interface, int soquete){
 void* monta_pacote(int tam, unsigned char sequencia, unsigned char tipo, void* dados){
 
   //tamanho pacote = 4 + tam
-  void* pacote=malloc(tam + 4);
+  void* pacote = malloc(tam + 4);
   if(!pacote)
     return NULL;
   
