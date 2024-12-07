@@ -63,4 +63,16 @@ int inc_sequencia(int seq);
 //Cria no subdiretorio corrente chamado arquivo_backup, cria o diretorio se nao existir
 FILE* cria_arq(char* nome_arq, char* caminho_atual);
 
+//Fecha o arquivo e volta para o diretorio inicial em cria_arq
+void fecha_arq(FILE* arq, char* caminho);
+
+//Recebe um stream para o arquivo
+//Recebe um buffer dados, e o tamanho
+//Grava esses dados no arq
+int grava_dados(FILE* arq, unsigned char* dados, unsigned char tamanho);
+
+//Recebe a ultima sequencia e a atual
+//Retorna 1 se a atual eh a proxima e 0 cc
+int verifia_seq(unsigned char ultima_seq, unsigned char seq_atual);
+
 #endif

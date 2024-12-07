@@ -73,7 +73,6 @@ int main(int argc, char **argv, char **envp){
           }
           cont_erro++;                    
         }
-
       }
 
       //Envia o final do buffer com tamanho menor que 63 bytes
@@ -94,10 +93,9 @@ int main(int argc, char **argv, char **envp){
         cont_erro++;
       }
 
-      system("pause");
-
       //FAZ O ENVIO DO ARQUIVO
-      seq=0;
+      tipo = TP_ENVIA_ARQ;
+      seq = 0;
       arquivo = abre_arquivo(caminho, nome, caminho_completo, caminho_atual, "r"); 
       lidos = le_arquivo(arquivo, buffer, TAM_BUFFER);
       while(lidos){
@@ -112,6 +110,7 @@ int main(int argc, char **argv, char **envp){
           pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
           
           if(envia_pacote( pacote, interface, socket)){         //se o envio deu certo
+            tipo = TP_ENVIO;
             lidos -= tam_dados_msg;           //diminui a quantidade restante
             seq = inc_sequencia(seq);         //prepara a proxima sequencia
             ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
@@ -127,6 +126,7 @@ int main(int argc, char **argv, char **envp){
         }
 
         //Envia o final do buffer com tamnho menor que 63 bytes
+        tipo = TP_FIM_ENVIO;
         tam_dados_msg = lidos;
         pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
 

@@ -206,3 +206,41 @@ FILE* cria_arq(char* nome_arq, char* caminho_atual){
   //criou o arquivo na pasta certa, retorna stream
   return arq;
 }
+
+//Fecha o arquivo e volta para o diretorio inicial em cria_arq
+void fecha_arq(FILE* arq, char* caminho){
+  //Muda para a pasta 
+  chdir(caminho);
+
+  fclose(arq);
+}
+
+//Recebe um stream para o arquivo
+//Recebe um buffer dados, e o tamanho
+//Grava esses dados no arq
+//Retorna 1 se deu certo, 0cc
+int grava_dados(FILE* arq, unsigned char* dados, unsigned char tamanho){
+  
+  int quant_escrita;
+
+  quant_escrita = fwrite(dados, 1, tamanho, arq);
+
+  if(quant_escrita != tamanho)
+    return 0;
+
+  return 1;
+}
+
+//Recebe a ultima sequencia e a atual
+//Retorna 1 se a atual eh a proxima e 0 cc
+int verifia_seq(unsigned char ultima_seq, unsigned char seq_atual){
+  
+  if( ultima_seq + 1 == seq_atual && seq_atual <= 31 )
+    return 1;
+  
+  if( ultima_seq == 31 && seq_atual == 0 )
+    return 1;
+
+  return 0;
+  
+}

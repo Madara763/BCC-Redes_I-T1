@@ -23,13 +23,13 @@ int main() {
 
     char *interface = "lo";                 // Nome da Interface de rede usada
     int soquete = cria_raw_socket(interface);
-    unsigned char buffer[ETH_FRAME_LEN];      // Receberá toda a mensagem enviada                       // Flag para identificar se o marcador de início está correto
+    unsigned char buffer[ETH_FRAME_LEN];      // Receberá toda a mensagem enviada                       
     unsigned char dados[DATA_SIZE];           // Parte de dados da mensagem recebida
     unsigned char tamanho = 0;                // Campo tamanho da mensagem recebida
     unsigned char sequencia = 0;              // Sequência da mensagem
     unsigned char tipo = 0;                   // Tipo da mensagem (ex: backup, restaura, verifica)
 
-    unsigned char sequencia_recebida = 0;     // Sequência da mensagem
+    unsigned char ultima_seq = 0;             // Sequência da mensagem
     
     int i_aux;
 
@@ -43,7 +43,6 @@ int main() {
     //0 se nao, 1 se sim 
     unsigned char buffer_seq[MAX_SEQ][DATA_SIZE + 1];
     
-
     printf("Aguardando pacotes...\n");
 
     while (1) {
@@ -74,7 +73,7 @@ int main() {
                     continue;  
             }
 
-            //ultimos 63bytes do nome
+            //ultimos 63 bytes do nome
             if(tipo == TP_BACKUP_INI || tipo == TP_ENVIA_NOME){
                 i_aux = (((int) sequencia) * 63) ;
                 strncpy(nome + i_aux, (char *) dados, tamanho );
@@ -83,12 +82,33 @@ int main() {
             //Recebi o nome todo, cria o arquivo
             arq = cria_arq(nome, caminho_atual);
             if(!arq){fprintf(stderr, "Erro ao criar aquivo.\n"); return 0;}   
+
+            if(recebe_pacote(soquete, buffer))
+                desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
             
+
+            printf("Pacote recebido:\n");
+            printf("  Tamanho: %u\n", tamanho);
+            printf("  Sequência: %u\n", sequencia);
+            printf("  Tipo: %u\n", tipo);
+            printf("  Dados: ");
+            printf("\n");
+    
+            if(recebe_pacote(soquete, buffer))
+                desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
+
             //inicia recepcao do arquivo
             if(tipo == TP_ENVIA_ARQ){
+                printf("entrou no tp_envia_arq\n");
                 while(tipo != TP_FIM_ENVIO){
                     
+                    if( verifia_seq(sequencia, ultima_seq) ){
+                        if(grava_dados(arq, dados, tamanho))
+                            ultima_seq = sequencia;//retorna erro
+                        //else
+                            //retorna erro
 
+                    }
                     
                     if (recebe_pacote(soquete, buffer))
                         desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
@@ -97,6 +117,7 @@ int main() {
 
                 }//Backup Finalizado
             }
+            fecha_arq(arq, caminho_atual);
             break;
         
         default:
@@ -104,15 +125,15 @@ int main() {
         } 
 
         // Exibe conteúdo do pacote decodificado
-        printf("Pacote recebido:\n");
-        printf("  Tamanho: %u\n", tamanho);
-        printf("  Sequência: %u\n", sequencia);
-        printf("  Tipo: %u\n", tipo);
-        printf("  Dados: ");
-        for (int i = 0; i < DATA_SIZE; i++) {
-            printf("%02x ", dados[i]);
-        }
-        printf("\n");
+        // printf("Pacote recebido:\n");
+        // printf("  Tamanho: %u\n", tamanho);
+        // printf("  Sequência: %u\n", sequencia);
+        // printf("  Tipo: %u\n", tipo);
+        // printf("  Dados: ");
+        // for (int i = 0; i < DATA_SIZE; i++) {
+        //     printf("%02x ", dados[i]);
+        // }
+        // printf("\n");
     }
 
     close(soquete);
