@@ -34,9 +34,15 @@ int main() {
     int i_aux;
 
     //Variaveis dos arquivos
+    FILE* arq;
+    char caminho_atual[PATH_SIZE];
     char nome[NAME_SIZE] = {0};
-    void** buffer_seq = malloc(MAX_SEQ * sizeof(void *));
-    if(!buffer_seq)  return 0;
+    
+    //Essa matriz armazena os pacotes recebidos um por linha
+    //A primeira coluna de cada linha diz se a linha deve ser escrita no arquivo ou nao
+    //0 se nao, 1 se sim 
+    unsigned char buffer_seq[MAX_SEQ][DATA_SIZE + 1];
+    
 
     printf("Aguardando pacotes...\n");
 
@@ -68,25 +74,29 @@ int main() {
                     continue;  
             }
 
+            //ultimos 63bytes do nome
             if(tipo == TP_BACKUP_INI || tipo == TP_ENVIA_NOME){
                 i_aux = (((int) sequencia) * 63) ;
                 strncpy(nome + i_aux, (char *) dados, tamanho );
             }
             
-            //Recebi o nome todo
-            cria_arq(nome);
-                
+            //Recebi o nome todo, cria o arquivo
+            arq = cria_arq(nome, caminho_atual);
+            if(!arq){fprintf(stderr, "Erro ao criar aquivo.\n"); return 0;}   
+            
+            //inicia recepcao do arquivo
+            if(tipo == TP_ENVIA_ARQ){
+                while(tipo != TP_FIM_ENVIO){
+                    
 
+                    
+                    if (recebe_pacote(soquete, buffer))
+                        desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
+                    else
+                        continue;       
 
-            while(tipo != TP_FIM_ENVIO){
-                
-                if (recebe_pacote(soquete, buffer))
-                    desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
-                else
-                    continue;       
-
-            }//Backup Finalizado
-
+                }//Backup Finalizado
+            }
             break;
         
         default:

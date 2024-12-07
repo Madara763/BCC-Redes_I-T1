@@ -15,11 +15,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include <libgen.h>
 
 #define NAME_SIZE 256    //Tamanho maximo nome do arquivo
 #define PATH_SIZE 4096   //Tamanho maximo caminho do arquivo
 #define TAM_BUFFER 4096  //Tamanho maximo buffer de leitura do arquivo
 #define MAX_SEQ 31       //Sequencia maxima nas mensagens (maximo em 5 bits)
+
+#define PASTA_BKP "backupapp"
 
 #define NOME_ARQ_CKSUM "Arquivo_temporario_do_cksum.tmp"
 #define MSG_ERRO_ENVIO "Não foi possivel enviar arquivo.\n"
@@ -57,6 +61,6 @@ int inc_sequencia(int seq);
 
 //Cria um arquivo com o nome recebido 
 //Cria no subdiretorio corrente chamado arquivo_backup, cria o diretorio se nao existir
-FILE* cria_arq(char* nome_arq);
+FILE* cria_arq(char* nome_arq, char* caminho_atual);
 
 #endif

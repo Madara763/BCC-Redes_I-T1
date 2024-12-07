@@ -175,3 +175,34 @@ int inc_sequencia(int seq){
   return ret;
 }
 
+//Cria um arquivo com o nome recebido 
+//Cria no subdiretorio corrente chamado backupapp, cria o diretorio se nao existir
+FILE* cria_arq(char* nome_arq, char* caminho_atual){
+  
+  DIR *dir;
+  char comando[8192];
+  getcwd(caminho_atual, PATH_SIZE);
+
+  //Garente que a pasta existe
+  if ((dir = opendir (PASTA_BKP)) == NULL) {
+    sprintf(comando, "mkdir %s ", PASTA_BKP);
+    system(comando);
+  }
+  
+  if ((dir = opendir (PASTA_BKP)) == NULL) {
+    fprintf(stderr, "Erro ao criar diretorio.\n");
+    return NULL;
+  }
+  closedir(dir);
+
+  //Muda para a pasta backupapp 
+  chdir(PASTA_BKP);
+
+  //Cria arquivo
+  FILE *arq;
+  arq = fopen(nome_arq, "w+");
+  if(!arq){fprintf(stderr, "Erro ao criar aquivo.\n"); return NULL;}
+
+  //criou o arquivo na pasta certa, retorna stream
+  return arq;
+}
