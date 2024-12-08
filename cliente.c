@@ -170,6 +170,55 @@ int main(int argc, char **argv, char **envp){
     case 'r':
       trata_nome_dir(nome_arq, nome, caminho, caminho_completo );
       printf("Restaurando: %s/%s ...\n", caminho, nome);
+
+      //FAZ O ENVIO DO NOME DO ARQUIVO
+      tipo = TP_RESTAURA_INI;
+
+      seq = 0;
+      tam_nome = strlen(nome);
+      ptr_buffer = nome;        //aponta pro inicio do nome
+
+      //sequencializa, prepara e envia se o total de dados do nome eh maior de 63
+      while(tam_nome > TAM_MAX_DADOS){
+
+        tam_dados_msg = TAM_MAX_DADOS;
+        pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
+        
+        if(envia_pacote( pacote, interface, socket)){         //se o envio deu certo
+          tam_nome -= tam_dados_msg;        //diminui a quantidade restante
+          seq = inc_sequencia(seq);         //prepara a proxima sequencia
+          ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
+          free(pacote);
+
+          tipo = TP_ENVIA_NOME;             //Define o tipo para os proximos envios
+        }
+        else{                                                 //se o envio deu errado
+          if(cont_erro > MAX_ERROS){
+            fprintf(stderr, MSG_ERRO_ENVIO);
+            return 1;
+          }
+          cont_erro++;                    
+        }
+      }
+
+      //Envia o final do buffer com tamanho menor que 63 bytes
+      tam_dados_msg = tam_nome;
+      pacote = monta_pacote (tam_dados_msg, seq, tipo, ptr_buffer);
+
+      if(envia_pacote( pacote, interface, socket) ){        //se o envio deu certo
+        tam_nome -= tam_dados_msg;        //diminui a quantidade restante
+        seq = inc_sequencia(seq);         //prepara a proxima sequencia
+        ptr_buffer += tam_dados_msg;      //avanca o ptr no buffer
+        free(pacote);     
+      }
+      else{                               //se o envio deu errado
+        if(cont_erro > MAX_ERROS){
+          fprintf(stderr, MSG_ERRO_ENVIO);
+          return 1;
+        }
+        cont_erro++;
+      }
+      
       break;
 
     default:

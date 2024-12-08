@@ -37,10 +37,10 @@ int main() {
   FILE* arq;
   char caminho_atual[PATH_SIZE];
   char nome[NAME_SIZE] = {0};
-  
-  printf("Aguardando pacotes...\n");
 
   while (1) {
+
+    printf("Aguardando pacotes...\n");
 
     // Recebe o pacote e guarda em buffer, 
     if (!recebe_pacote(soquete, buffer)) {
@@ -48,7 +48,7 @@ int main() {
       continue;
     }
 
-    // Desmonta o pacote, colocando cada parte da mensagem nas variáveis passadas
+    //Desmonta o pacote, colocando cada parte da mensagem nas variáveis passadas
     desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
 
     switch (tipo)
@@ -83,18 +83,11 @@ int main() {
       if(!arq){fprintf(stderr, "Erro ao criar aquivo.\n"); return 0;}   
 
       //Recebe inicio do arq
-      //Reseta sequencia
       if(recebe_pacote(soquete, buffer))
         desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
       
+      //Reseta sequencia
       ultima_seq = 31;
-
-      printf("Pacote recebido:\n");
-      printf("  Tamanho: %u\n", tamanho);
-      printf("  Sequência: %u\n", sequencia);
-      printf("  Tipo: %u\n", tipo);
-      printf("  Dados: ");
-      printf("\n");
 
       //inicia recepcao do arquivo
       if(tipo == TP_ENVIA_ARQ || tipo == TP_FIM_ENVIO){
@@ -125,11 +118,41 @@ int main() {
             
       }//Backup Finalizado
 
+      //Finaliza 
       fecha_arq(arq, caminho_atual);
       printf("Arquivo %s salvo.\n", nome);
       memset(nome, '\0', sizeof(nome));
+      ultima_seq = 31;
+      
+      break; //acaba o backup
+
+    case TP_RESTAURA_INI: //Inicio de uma restauracao
+
+       while (tamanho == DATA_SIZE){
+        if(tipo == TP_RESTAURA_INI || tipo == TP_ENVIA_NOME){
+          if(verifia_seq(ultima_seq, sequencia)){
+            i_aux = (((int) sequencia) * 63) ;
+            strncpy(nome + i_aux, (char *) dados, tamanho );
+          }
+        }
+
+        if (recebe_pacote(soquete, buffer))
+          desmontar_pacote(buffer, dados, &tamanho, &sequencia, &tipo);
+        else 
+          continue;  
+      }
+
+      //ultimos 63 bytes do nome
+      if(tipo == TP_RESTAURA_INI || tipo == TP_ENVIA_NOME){
+        if(verifia_seq(ultima_seq, sequencia)){
+          i_aux = (((int) sequencia) * 63) ;
+          strncpy(nome + i_aux, (char *) dados, tamanho );
+        }            
+      }
+
+      printf("Nome Recebido: %s\n", nome);
       break;
-  
+
     default:
       break;
     } 
