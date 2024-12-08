@@ -187,6 +187,9 @@ FILE* cria_arq(char* nome_arq, char* caminho_atual){
   if ((dir = opendir (PASTA_BKP)) == NULL) {
     sprintf(comando, "mkdir %s ", PASTA_BKP);
     system(comando);
+
+    sprintf(comando, "chmod 777 %s ", PASTA_BKP);
+    system(comando);
   }
   
   if ((dir = opendir (PASTA_BKP)) == NULL) {
@@ -197,6 +200,7 @@ FILE* cria_arq(char* nome_arq, char* caminho_atual){
 
   //Muda para a pasta backupapp 
   chdir(PASTA_BKP);
+  
 
   //Cria arquivo
   FILE *arq;
@@ -221,6 +225,7 @@ void fecha_arq(FILE* arq, char* caminho){
 //Retorna 1 se deu certo, 0cc
 int grava_dados(FILE* arq, unsigned char* dados, unsigned char tamanho){
   
+  printf("Entrou grava_dados\n");
   int quant_escrita;
 
   quant_escrita = fwrite(dados, 1, tamanho, arq);
@@ -234,6 +239,8 @@ int grava_dados(FILE* arq, unsigned char* dados, unsigned char tamanho){
 //Recebe a ultima sequencia e a atual
 //Retorna 1 se a atual eh a proxima e 0 cc
 int verifia_seq(unsigned char ultima_seq, unsigned char seq_atual){
+  
+  printf("Entrou verica seq: ult - %i  atual - %i\n", ultima_seq, seq_atual);
   
   if( ultima_seq + 1 == seq_atual && seq_atual <= 31 )
     return 1;
