@@ -52,7 +52,7 @@ Alguns tipos das mensagens trocadas entre cliente e servidora:
   01101 ok+checksum – cksum() função de verificação de crc
 ```
 
-Tipos usados no trabalho
+####Tipos usados no trabalho
 ```
 #define TP_ACK 0          //00000 ACK
 #define TP_NACK 1         //00001 NACK
